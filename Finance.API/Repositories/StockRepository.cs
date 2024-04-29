@@ -60,9 +60,6 @@ namespace Finance.API.Repositories
             //hasStock.MarketCap = updateStockRequestDto.MarketCap;
             _mapper.Map(updateStockRequestDto, hasStock);
             await _context.SaveChangesAsync();
-
-            await _context.SaveChangesAsync();
-
             return hasStock;
         }
     }
