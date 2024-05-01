@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Finance.API.Data;
+using Finance.API.Dtos.Comment;
 using Finance.API.Dtos.Stock;
 using Finance.API.Interfaces;
 using Finance.API.Models;
@@ -29,7 +30,7 @@ namespace Finance.API.Repositories
         {
             var stockModel = await _context.Stocks.FirstOrDefaultAsync(x => x.Id == id);
             if (stockModel == null) return null;
-            
+                
             _context.Stocks.Remove(stockModel);
             await _context.SaveChangesAsync();
             return stockModel;
@@ -38,15 +39,33 @@ namespace Finance.API.Repositories
         public async Task<List<Stock>> GetAllAsync()
         {
             return await _context.Stocks.ToListAsync();
+
         }
 
-        public async Task<Stock> GetByIdAsync(int id)
+        /// <summary>
+        /// Stoklara bağlı commentleri de çek
+        /// </summary>
+        /// <returns></returns>
+		public async Task<List<Stock>> GetAllWithCommentsAsync()
+		{
+			return await _context.Stocks.Include(s => s.Comments).ToListAsync();
+
+		}
+
+		public async Task<Stock> GetByIdAsync(int id)
         {
-            var stockId = await _context.Stocks.FindAsync(id);
+            var stockId = await _context.Stocks.Include(x => x.Comments)
+                .FirstOrDefaultAsync(s => s.Id == id);
             return stockId;
         }
 
-        public async Task<Stock?> UpdateAsync(int id, UpdateStockRequestDto updateStockRequestDto)
+		public Task<bool> StockExist(int id)
+		{
+            var hasStock = _context.Stocks.AnyAsync(x => x.Id == id);
+			return hasStock;
+		}
+
+		public async Task<Stock?> UpdateAsync(int id, UpdateStockRequestDto updateStockRequestDto)
         {
             var hasStock = await _context.Stocks.FirstOrDefaultAsync(x => x.Id == id);
 

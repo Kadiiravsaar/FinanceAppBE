@@ -3,6 +3,7 @@ using Finance.API.Data;
 using Finance.API.Dtos.Stock;
 using Finance.API.Interfaces;
 using Finance.API.Models;
+using Finance.API.Repositories;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -24,17 +25,25 @@ namespace Finance.API.Controllers
         }
 
 
-        [HttpGet]
-        public async Task<IActionResult> GetAll()
+		[HttpGet("all")]
+		public async Task<IActionResult> GetAll()
         {
             var stocks = await _stockRepository.GetAllAsync();
             var stockDtos = _mapper.Map<List<StockDto>>(stocks);
             return Ok(stockDtos);
         }
 
+		[HttpGet("allwithcomments")]
+		public async Task<IActionResult> GetAllWithComments()
+        {
+            var stocks = await _stockRepository.GetAllWithCommentsAsync();
+			var stockDtos = _mapper.Map<List<StockDto>>(stocks);
+			return Ok(stockDtos);
+		}
 
-        // FromRoute https://api.myservice.com/books/123
-        [HttpGet("{id}")]
+
+		// FromRoute https://api.myservice.com/books/123
+		[HttpGet("{id}")]
         public async Task<IActionResult> GetById([FromRoute] int id)
         {
             var stock = await _stockRepository.GetByIdAsync(id);
@@ -67,7 +76,7 @@ namespace Finance.API.Controllers
         }
 
         [HttpDelete]
-        [Route("{id}")]
+        [Route("{id}")] 
         public async Task<IActionResult> Delete([FromRoute] int id)
         {
             var stockModel = await _stockRepository.DeleteAsync(id);
