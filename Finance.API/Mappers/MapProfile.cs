@@ -10,9 +10,13 @@ namespace Finance.API.Mappers
         public MapProfile()
         {
             CreateMap<Stock, StockDto>();
-            CreateMap<Comment, CommentDto>().ReverseMap();
+			CreateMap<Comment, StockCommentDto>();
+			CreateMap<Comment, CommentDto>().ReverseMap();
             CreateMap<CreateStockRequestDto, Stock>();
             CreateMap<UpdateStockRequestDto, Stock>();
-        }
+            CreateMap<CreateCommentRequestDto, CommentDto>();
+            CreateMap<CreateCommentRequestDto, Comment>();
+
+		}
     }
 }

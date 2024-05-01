@@ -1,4 +1,5 @@
-﻿using Finance.API.Models;
+﻿using Finance.API.Dtos.Comment;
+using Finance.API.Models;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Finance.API.Dtos.Stock
@@ -13,5 +14,6 @@ namespace Finance.API.Dtos.Stock
         public string Industry { get; set; } = string.Empty;
         public long MarketCap { get; set; }
         public DateTime CreatedOn { get; set; } = DateTime.UtcNow;
+        public List<StockCommentDto> Comments { get; set; }
     }
 }
