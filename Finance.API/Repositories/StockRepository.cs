@@ -2,6 +2,7 @@
 using Finance.API.Data;
 using Finance.API.Dtos.Comment;
 using Finance.API.Dtos.Stock;
+using Finance.API.Helpers;
 using Finance.API.Interfaces;
 using Finance.API.Models;
 using Microsoft.EntityFrameworkCore;
@@ -36,16 +37,40 @@ namespace Finance.API.Repositories
             return stockModel;
         }
 
-        public async Task<List<Stock>> GetAllAsync()
+        public async Task<List<Stock>> GetAllAsync(QueryObject queryObject)
         {
-            return await _context.Stocks.ToListAsync();
+			var stocks = await _context.Stocks.AsQueryable().ToListAsync();
 
-        }
+			if (!string.IsNullOrWhiteSpace(queryObject.CompanyName))
+			{
+				var companyNameLower = UserInput(queryObject.CompanyName); // büyük küçük harfe duyarlı 
+				stocks = stocks.Where(x => x.CompanyName.ToLower().Contains(companyNameLower)).ToList();
+			}
 
-        /// <summary>
-        /// Stoklara bağlı commentleri de çek
-        /// </summary>
-        /// <returns></returns>
+			if (!string.IsNullOrWhiteSpace(queryObject.Symbol))
+			{
+				var symbolLower = UserInput(queryObject.Symbol);
+				stocks = stocks.Where(x => x.Symbol.ToLower().Contains(symbolLower)).ToList();
+			}
+
+			return stocks;
+
+		}
+
+		private string UserInput(string input)
+		{
+			if (string.IsNullOrWhiteSpace(input))
+			{
+				return input;
+			}
+			return input.ToLower();
+		}
+
+
+		/// <summary>
+		/// Stoklara bağlı commentleri de çek
+		/// </summary>
+		/// <returns></returns>
 		public async Task<List<Stock>> GetAllWithCommentsAsync()
 		{
 			return await _context.Stocks.Include(s => s.Comments).ToListAsync();
