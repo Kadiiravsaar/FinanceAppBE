@@ -6,6 +6,8 @@ using Finance.API.Helpers;
 using Finance.API.Interfaces;
 using Finance.API.Models;
 using Microsoft.EntityFrameworkCore;
+using System.Linq;
+using System.Linq.Expressions;
 
 namespace Finance.API.Repositories
 {
@@ -51,6 +53,13 @@ namespace Finance.API.Repositories
 			{
 				var symbolLower = UserInput(queryObject.Symbol);
 				stocks = stocks.Where(x => x.Symbol.ToLower().Contains(symbolLower)).ToList();
+			}
+
+			if (!string.IsNullOrWhiteSpace(queryObject.SortBy))
+			{
+				var param = Expression.Parameter(typeof(Stock), "s");
+				var sortExpression = Expression.Lambda<Func<Stock, object>>(Expression.Convert(Expression.Property(param, queryObject.SortBy), typeof(object)), param);
+				stocks = queryObject.IsDecsending ? stocks.AsQueryable().OrderByDescending(sortExpression).ToList() : stocks.AsQueryable().OrderBy(sortExpression).ToList();
 			}
 
 			return stocks;
