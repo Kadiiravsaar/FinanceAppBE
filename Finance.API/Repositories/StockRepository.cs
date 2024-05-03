@@ -62,7 +62,17 @@ namespace Finance.API.Repositories
 				stocks = queryObject.IsDecsending ? stocks.AsQueryable().OrderByDescending(sortExpression).ToList() : stocks.AsQueryable().OrderBy(sortExpression).ToList();
 			}
 
-			return stocks;
+            //stocks = stocks.Skip((queryObject.PageNumber - 1) * queryObject.PageSize).Take(queryObject.PageSize).ToList();
+
+            var skipNumber = (queryObject.PageNumber - 1) * queryObject.PageSize;
+			//Bu satırda, atlanacak stok sayısını hesaplıyoruz.queryObject.PageNumber ve queryObject.PageSize genellikle bir web sayfasında gösterilecek veri miktarını kontrol etmek için kullanılır.
+			//PageNumber: Kullanıcının hangi sayfada olduğunu belirtir.Örneğin, eğer kullanıcı 3.sayfadaysa, PageNumber 3 olacaktır.
+			//PageSize: Her sayfada kaç adet stok gösterileceğini belirtir.Örneğin, eğer her sayfada 10 stok göstermek istiyorsak, PageSize 10 olacaktır.
+			//Bu iki değeri kullanarak, atlanacak stok sayısını(skipNumber) hesaplıyoruz.Eğer kullanıcı 3.sayfadaysa ve her sayfada 10 stok gösteriliyorsa, ilk 20 stok atlanacak ve 21.stoktan itibaren stoklar gösterilecektir.
+
+			return stocks.Skip(skipNumber).Take(queryObject.PageSize).ToList();
+			//Bu satırda, öncelikle Skip(skipNumber) metodu ile belirli sayıda stok atlanır. Sonra Take(queryObject.PageSize) metodu ile belirli sayıda stok alınır. Son olarak, ToList() metodu ile bu stoklar bir liste haline getirilir ve döndürülür.
+
 
 		}
 
