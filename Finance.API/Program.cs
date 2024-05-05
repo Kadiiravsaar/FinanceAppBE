@@ -1,4 +1,5 @@
 using Finance.API.Data;
+using Finance.API.Helpers;
 using Finance.API.Interfaces;
 using Finance.API.Mappers;
 using Finance.API.Models;
@@ -59,7 +60,8 @@ builder.Services.AddAuthentication(opt =>
 
 builder.Services.AddScoped<IStockRepository, StockRepository>();
 builder.Services.AddScoped<ICommentRepository, CommentRepository>();
-builder.Services.AddScoped<IUserRepository,UserRepository>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<ITokenService, TokenService>();
 
 var app = builder.Build();
 
