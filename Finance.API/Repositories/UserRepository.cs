@@ -11,15 +11,18 @@ namespace Finance.API.Repositories
 	{
 		private readonly UserManager<AppUser> _userManager;
 		private readonly IMapper _mapper;
+		private readonly ITokenService _tokenService;
 
 
-		public UserRepository(UserManager<AppUser> userManager, IMapper mapper)
+
+		public UserRepository(UserManager<AppUser> userManager, IMapper mapper, ITokenService tokenService)
 		{
 			_userManager = userManager;
 			_mapper = mapper;
+			_tokenService = tokenService;
 		}
 
-		public async Task<AppUser> SignUp(RegisterDto registerDto)
+		public async Task<NewUserDto> SignUp(RegisterDto registerDto)
 		{
 			if (registerDto == null)
 			{
@@ -35,14 +38,24 @@ namespace Finance.API.Repositories
 
 			if (result.Succeeded)
 			{
-			var role = await _userManager.AddToRoleAsync(user, "User");
+				await _userManager.AddToRoleAsync(user, "User");
+				var userDto = new NewUserDto
+				{
+					UserName = user.UserName,
+					Email = user.Email,
+					Token = _tokenService.CreateToken(user)
+				};
 
-
-				return user;
+				return userDto;
 
 			}
 			else
 			{
+				foreach (var error in result.Errors)
+				{
+					Console.WriteLine($"Error: {error.Code} - {error.Description}");
+				}
+
 				throw new Exception("Kullanıcı oluşturulamadı");
 			}
 		}
