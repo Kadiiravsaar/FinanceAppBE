@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Finance.API.Dtos.Comment;
 using Finance.API.Dtos.Stock;
+using Finance.API.Dtos.User;
 using Finance.API.Models;
 
 namespace Finance.API.Mappers
@@ -16,6 +17,7 @@ namespace Finance.API.Mappers
             CreateMap<UpdateStockRequestDto, Stock>();
             CreateMap<CreateCommentRequestDto, CommentDto>();
             CreateMap<CreateCommentRequestDto, Comment>();
+            CreateMap<AppUser, UserDto>();
 
 		}
     }

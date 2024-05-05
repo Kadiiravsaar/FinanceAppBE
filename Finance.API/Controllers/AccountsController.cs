@@ -23,5 +23,12 @@ namespace Finance.API.Controllers
 			return Ok(user);
 
 		}
+
+		[HttpGet]
+		public async Task<IActionResult> GetAllUsers()
+		{
+			var userList =await _userRepository.UserList();
+			return Ok(userList);	
+		}
 	}
 }
