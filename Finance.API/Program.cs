@@ -20,7 +20,7 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(option =>
 {
-	option.SwaggerDoc("v1", new OpenApiInfo { Title = "Demo API", Version = "v1" });
+	option.SwaggerDoc("v1", new OpenApiInfo { Title = "Finance API", Version = "v1" });
 	option.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
 	{
 		In = ParameterLocation.Header,
@@ -85,10 +85,12 @@ builder.Services.AddAuthentication(opt =>
 	};
 });
 
+builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<IStockRepository, StockRepository>();
 builder.Services.AddScoped<ICommentRepository, CommentRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<ITokenService, TokenService>();
+builder.Services.AddScoped<IPortfolioRepository, PortfolioRepository>();
 
 var app = builder.Build();
 
