@@ -17,7 +17,9 @@ namespace Finance.API.Models
         public long MarketCap { get; set; }
         public DateTime CreatedOn { get; set; } = DateTime.UtcNow;
         public List<Comment> Comments{ get; set; } = new List<Comment> { };
+		public List<Portfolio> Portfolios { get; set; } = new List<Portfolio>();
 
-    }
+
+	}
 
 }
