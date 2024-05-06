@@ -24,6 +24,14 @@ namespace Finance.API.Controllers
 
 		}
 
+		[HttpPost("login")]
+		public async Task<IActionResult> Login([FromBody] LoginDto loginDto)
+		{
+			var user = await _userRepository.SignIn(loginDto);
+			return Ok(user);
+
+		}
+
 		[HttpGet]
 		public async Task<IActionResult> GetAllUsers()
 		{

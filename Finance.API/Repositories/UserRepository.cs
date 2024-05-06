@@ -10,16 +10,47 @@ namespace Finance.API.Repositories
 	public class UserRepository : IUserRepository
 	{
 		private readonly UserManager<AppUser> _userManager;
+		private readonly SignInManager<AppUser> _signInManager;
 		private readonly IMapper _mapper;
 		private readonly ITokenService _tokenService;
 
 
 
-		public UserRepository(UserManager<AppUser> userManager, IMapper mapper, ITokenService tokenService)
+		public UserRepository(UserManager<AppUser> userManager, IMapper mapper, ITokenService tokenService, SignInManager<AppUser> signInManager)
 		{
 			_userManager = userManager;
 			_mapper = mapper;
 			_tokenService = tokenService;
+			_signInManager = signInManager;
+		}
+
+		public async Task<NewUserDto> SignIn(LoginDto loginDto)
+		{
+			if (loginDto == null)
+			{
+				throw new ArgumentNullException(nameof(loginDto));
+			}
+
+			var user = await _userManager.Users.FirstOrDefaultAsync(x => x.UserName == loginDto.UserName.ToLower());
+			if (user == null) return null;
+
+			var result = await _signInManager.CheckPasswordSignInAsync(user, loginDto.Password, false);
+			if (result.Succeeded)
+			{
+
+				var userInfo = new NewUserDto
+				{
+					UserName = user.UserName,
+					Email = user.Email,
+					Token = _tokenService.CreateToken(user)
+				};
+				return userInfo;
+			}
+			else
+			{
+				throw new Exception("Geçersiz kullanıcı adı veya şifre."); // Giriş başarısız olduğunda istenilen işlemin yapılması gerekir.
+			}
+
 		}
 
 		public async Task<NewUserDto> SignUp(RegisterDto registerDto)
@@ -65,7 +96,7 @@ namespace Finance.API.Repositories
 			var users = await _userManager.Users.ToListAsync();
 			var dtos = _mapper.Map<List<UserDto>>(users);
 			return dtos;
-			
+
 		}
 
 	}
