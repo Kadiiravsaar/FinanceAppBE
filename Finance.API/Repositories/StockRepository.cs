@@ -29,7 +29,12 @@ namespace Finance.API.Repositories
             return stock;
         }
 
-        public async Task<Stock?> DeleteAsync(int id)
+		public async Task<Stock?> GetBySymbolAsync(string symbol)
+		{
+			return await _context.Stocks.FirstOrDefaultAsync(s => s.Symbol == symbol);
+		}
+
+		public async Task<Stock?> DeleteAsync(int id)
         {
             var stockModel = await _context.Stocks.FirstOrDefaultAsync(x => x.Id == id);
             if (stockModel == null) return null;
