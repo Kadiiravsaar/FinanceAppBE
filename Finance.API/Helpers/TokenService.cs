@@ -21,6 +21,7 @@ namespace Finance.API.Helpers
 		{
 			var claims = new List<Claim>
 			{
+				new Claim(JwtRegisteredClaimNames.NameId, appUser.Id),
 				new Claim(JwtRegisteredClaimNames.Email, appUser.Email),
 				new Claim(JwtRegisteredClaimNames.GivenName, appUser.UserName)
 			};
