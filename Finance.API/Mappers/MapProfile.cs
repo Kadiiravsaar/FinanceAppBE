@@ -9,16 +9,22 @@ namespace Finance.API.Mappers
     public class MapProfile : Profile
     {
         public MapProfile()
-        {
-            CreateMap<Stock, StockDto>();
+		{
+			CreateMap<Stock, StockDto>();
+			CreateMap<StockDto, List<StockCommentDto>>();
 			CreateMap<Comment, StockCommentDto>();
-			CreateMap<Comment, CommentDto>().ReverseMap();
-            CreateMap<CreateStockRequestDto, Stock>();
-            CreateMap<UpdateStockRequestDto, Stock>();
-            CreateMap<CreateCommentRequestDto, CommentDto>();
-            CreateMap<CreateCommentRequestDto, Comment>();
-            CreateMap<AppUser, UserDto>();
+			CreateMap<CreateStockRequestDto, Stock>();
+			CreateMap<UpdateStockRequestDto, Stock>();
+			CreateMap<CreateCommentRequestDto, CommentDto>();
+				
 
+			CreateMap<AppUser, UserDto>();
+
+			CreateMap<CreateCommentRequestDto, Comment>();
+			CreateMap<Comment, CommentDto>()
+				.ForMember(dest => dest.CreatedBy, opt => opt.MapFrom(src => src.AppUser.UserName)); // Yeni alanın eşlenmesi
+			
+				
 		}
     }
 }

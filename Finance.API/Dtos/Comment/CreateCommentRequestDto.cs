@@ -12,7 +12,5 @@ namespace Finance.API.Dtos.Comment
 		[MinLength(5, ErrorMessage = "Content must be 5 characters")]
 		[MaxLength(280, ErrorMessage = "Content cannot be over 280 characters")]
 		public string Content { get; set; } = string.Empty;
-		public int? StockId { get; set; }
-
 	}
 }

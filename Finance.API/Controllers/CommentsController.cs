@@ -3,6 +3,7 @@ using Finance.API.Dtos.Comment;
 using Finance.API.Dtos.Stock;
 using Finance.API.Interfaces;
 using Finance.API.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -45,13 +46,14 @@ namespace Finance.API.Controllers
 			return Ok(map);
 		}
 
+		[Authorize]
 		[HttpPost("{stockId:int}")]
 		public async Task<IActionResult> CreateComment([FromRoute] int stockId, CreateCommentRequestDto createCommentRequestDto)
 		{
 			if (!ModelState.IsValid) return BadRequest(ModelState);
 
 			var stock = await _stockRepository.StockExist(stockId);
-			if (stockId != createCommentRequestDto.StockId)
+			if (stockId != stockId)
 			{
 				return BadRequest("Stok ID'leri eşleşmiyor");
 			}
@@ -61,6 +63,7 @@ namespace Finance.API.Controllers
 			}
 
 			var commentModel = _mapper.Map<Comment>(createCommentRequestDto);
+			commentModel.StockId = stockId;
 			var createdComment =  await _commentRepository.CreateAsync(commentModel);
 			var commentDto = _mapper.Map<CommentDto>(createdComment); // Bu satırı ekleyin
 
