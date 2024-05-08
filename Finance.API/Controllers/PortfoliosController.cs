@@ -39,5 +39,15 @@ namespace Finance.API.Controllers
 
 		}
 
+
+		[HttpDelete]
+		[Authorize]
+		public async Task<IActionResult> CreatePortfolio(string symbol)
+		{
+			var result = await _portfolioRepository.DeleteAsync(symbol);
+			return Ok(result);
+
+		}
+
 	}
 }

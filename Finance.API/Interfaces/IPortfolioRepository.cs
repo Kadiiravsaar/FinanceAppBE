@@ -6,5 +6,6 @@ namespace Finance.API.Interfaces
 	{
 		Task<List<Stock>> GetUserPortfolio();
 		Task<Portfolio> CreateAsync(string symbol);
+		Task<Portfolio> DeleteAsync(string symbol);
 	}
 }

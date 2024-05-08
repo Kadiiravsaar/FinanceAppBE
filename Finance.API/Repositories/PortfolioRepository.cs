@@ -71,6 +71,8 @@ namespace Finance.API.Repositories
 		public async Task<List<Stock>> GetUserPortfolio()
 		{
 			var user = await GetCurrentUserAsync();
+			//var userId = _httpContextAccessor.HttpContext.User.GetUserId();
+			//var appUserr = await _userManager.FindByIdAsync(userId);
 
 			var stocks = await _context.Portfolios
 		   .Where(p => p.AppUserId == user.Id)
@@ -86,6 +88,25 @@ namespace Finance.API.Repositories
 		   }).ToListAsync();
 
 			return stocks;
+		}
+
+		public async Task<Portfolio> DeleteAsync(string symbol)
+		{
+			
+			var currenUser = await GetCurrentUserAsync();
+			var userPortfolio = await GetUserPortfolio();
+
+		
+			var portfolioToDelete = await _context.Portfolios
+				.Include(p => p.Stock)  // Stock nesnesini yükle
+				.FirstOrDefaultAsync(x => x.AppUserId == currenUser.Id && x.Stock.Symbol == symbol);
+
+			if (portfolioToDelete == null) return null;
+			
+			_context.Portfolios.Remove(portfolioToDelete);
+			await _context.SaveChangesAsync();
+
+			return portfolioToDelete;
 		}
 	}
 }
