@@ -97,7 +97,7 @@ namespace Finance.API.Repositories
 		/// <returns></returns>
 		public async Task<List<Stock>> GetAllWithCommentsAsync()
 		{
-			return await _context.Stocks.Include(s => s.Comments).ToListAsync();
+			return await _context.Stocks.Include(s => s.Comments).ThenInclude(c=>c.AppUser).ToListAsync();
 
 		}
 
