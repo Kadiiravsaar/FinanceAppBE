@@ -13,21 +13,21 @@ namespace Finance.API.Repositories
 		private readonly AppDbContext _context;
 		private readonly UserManager<AppUser> _userManager;
 		private readonly IStockRepository _stockRepository;
-		//private readonly IFMPService _fmpService;
+		private readonly IFMPService _fmpService;
 		private readonly IHttpContextAccessor _httpContextAccessor;
 
 		public PortfolioRepository(AppDbContext context,
 			UserManager<AppUser> userManager,
 			IStockRepository stockRepository,
-			IHttpContextAccessor httpContextAccessor
-			//IFMPService fmpService
+			IHttpContextAccessor httpContextAccessor,
+			IFMPService fmpService
 			)
 		{
 			_context = context;
 			_userManager = userManager;
 			_stockRepository = stockRepository;
 			_httpContextAccessor = httpContextAccessor;
-			//_fmpService = fmpService;
+			_fmpService = fmpService;
 		}
 
 		public async Task<Portfolio> CreateAsync(string symbol)
@@ -39,7 +39,19 @@ namespace Finance.API.Repositories
 
 			// Hisse senedini bul
 			var hasStock = await _stockRepository.GetBySymbolAsync(symbol);
-			if (hasStock == null) return null;
+			if (hasStock == null)
+			{
+				hasStock = await _fmpService.FindStockBySymbolAsync(symbol);
+				if (hasStock == null)
+				{
+					return null;
+				}
+				else
+				{
+					await _stockRepository.CreateAsync(hasStock);
+				}
+			}
+
 
 
 			// Kullanıcının portföyünü kontrol et

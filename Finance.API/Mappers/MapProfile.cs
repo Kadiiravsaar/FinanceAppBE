@@ -7,10 +7,11 @@ using Finance.API.Models;
 namespace Finance.API.Mappers
 {
     public class MapProfile : Profile
-    {
+    {	
         public MapProfile()
 		{
 			CreateMap<Stock, StockDto>();
+			CreateMap<FMPStock, Stock>();
 			CreateMap<StockDto, List<StockCommentDto>>();
 			CreateMap<Comment, StockCommentDto>();
 			CreateMap<CreateStockRequestDto, Stock>();

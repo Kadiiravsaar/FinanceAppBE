@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Finance.API.Dtos.Comment;
 using Finance.API.Dtos.Stock;
+using Finance.API.Helpers;
 using Finance.API.Interfaces;
 using Finance.API.Models;
 using Microsoft.AspNetCore.Authorization;
@@ -16,12 +17,15 @@ namespace Finance.API.Controllers
 		private readonly ICommentRepository _commentRepository;
 		private readonly IStockRepository _stockRepository;
 		private readonly IMapper _mapper;
+		private readonly IFMPService _fmpService;
 
-		public CommentsController(ICommentRepository commentRepository, IMapper mapper, IStockRepository stockRepository)
+
+		public CommentsController(ICommentRepository commentRepository, IFMPService fmpService, IMapper mapper, IStockRepository stockRepository)
 		{
 			_commentRepository = commentRepository;
 			_mapper = mapper;
 			_stockRepository = stockRepository;
+			_fmpService = fmpService;
 		}
 
 		[HttpGet]
@@ -47,23 +51,30 @@ namespace Finance.API.Controllers
 		}
 
 		[Authorize]
-		[HttpPost("{stockId:int}")]
-		public async Task<IActionResult> CreateComment([FromRoute] int stockId, CreateCommentRequestDto createCommentRequestDto)
+		[HttpPost("{symbol:alpha}")]
+		public async Task<IActionResult> CreateComment([FromRoute] string symbol, CreateCommentRequestDto createCommentRequestDto)
 		{
 			if (!ModelState.IsValid) return BadRequest(ModelState);
 
-			var stock = await _stockRepository.StockExist(stockId);
-			if (stockId != stockId)
+			symbol = symbol.ToLower();
+			var stock = await _stockRepository.GetBySymbolAsync(symbol);
+
+			if (stock == null)
 			{
-				return BadRequest("Stok ID'leri eşleşmiyor");
-			}
-			if (!stock) 
-			{
-				return BadRequest("Stok bulunmamakta");
+				stock = await _fmpService.FindStockBySymbolAsync(symbol);
+				if (stock == null)
+				{
+					return BadRequest("Stock does not exists");
+				}
+				else
+				{
+					await _stockRepository.CreateAsync(stock);
+				}
 			}
 
+
 			var commentModel = _mapper.Map<Comment>(createCommentRequestDto);
-			commentModel.StockId = stockId;
+			commentModel.StockId = stock.Id;
 			var createdComment =  await _commentRepository.CreateAsync(commentModel);
 			var commentDto = _mapper.Map<CommentDto>(createdComment); // Bu satırı ekleyin
 
