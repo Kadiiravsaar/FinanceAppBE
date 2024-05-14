@@ -1,5 +1,11 @@
-﻿using Finance.Core.Models;
+﻿using AutoMapper;
+using Finance.Core.Extensions;
+using Finance.Core.Models;
 using Finance.Core.Repositories;
+using Finance.Core.Services;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,13 +16,29 @@ namespace Finance.Repository.Repositories
 {
 	public class CommentRepository : GenericRepository<Comment>, ICommentRepository
 	{
-		public CommentRepository(AppDbContext context) : base(context)
+
+		private readonly IStockRepository _stockRepository;
+
+		public CommentRepository(AppDbContext context, IStockRepository stockRepository) : base(context)
 		{
+			_stockRepository = stockRepository;
+	
 		}
 
+		public async Task<Comment> CreateAsync(string symbol, Comment comment)
+		{
+			var stock = await _stockRepository.GetBySymbolAsync(symbol);
+			comment.StockId = stock.Id;
+			await _context.AddAsync(comment);
+			await _context.SaveChangesAsync();
+			return comment;
+		}
+
+		public async Task<List<Comment>> GetAllWithUserAsync()
+		{
+
+			return await _context.Comments.Include(c => c.AppUser).ToListAsync();
+			
+		}
 	}
-
-
-	
-
 }
