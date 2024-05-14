@@ -17,15 +17,20 @@ namespace Finance.Service.Mapping
         public MapProfile()
         {
             CreateMap<Stock, StockDto>();
+            CreateMap<Stock, StockCommentDto>();
             CreateMap<FMPStock, Stock>();
 
             CreateMap<Comment, StockCommentDto>();
             CreateMap<CreateStockRequestDto, Stock>().ReverseMap();
             CreateMap<UpdateStockRequestDto, Stock>().ReverseMap();
             CreateMap<CreateCommentRequestDto, CommentDto>();
+            CreateMap<UpdateCommentRequestDto, Comment>();
+
+			
 
 
-            CreateMap<AppUser, UserDto>();
+
+			CreateMap<AppUser, UserDto>();
 
             CreateMap<CreateCommentRequestDto, Comment>();
             CreateMap<Comment, CommentDto>()
