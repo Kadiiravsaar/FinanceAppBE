@@ -8,6 +8,5 @@
 		public DateTime CreatedOn { get; set; } = DateTime.UtcNow;
 		public string CreatedBy { get; set; } = string.Empty;
 		public int? StockId { get; set; }
-		//public string? AppUserId { get; set; }
 	}
 }

@@ -1,4 +1,6 @@
-﻿namespace Finance.Core.DTOs.Stock
+﻿using Finance.Core.DTOs.Comment;
+
+namespace Finance.Core.DTOs.Stock
 {
     public class StockDto
     {
