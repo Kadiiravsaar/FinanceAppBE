@@ -1,9 +1,10 @@
 ﻿using AutoMapper;
-using Finance.API.Dtos.Comment;
-using Finance.API.Dtos.Stock;
-using Finance.API.Helpers;
-using Finance.API.Interfaces;
-using Finance.API.Models;
+
+using Finance.Core.DTOs.Comment;
+using Finance.Core.DTOs.Result;
+using Finance.Core.DTOs.Stock;
+using Finance.Core.Models;
+using Finance.Core.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -14,28 +15,29 @@ namespace Finance.API.Controllers
 	[ApiController]
 	public class CommentsController : ControllerBase
 	{
-		private readonly ICommentRepository _commentRepository;
-		private readonly IStockRepository _stockRepository;
+		private readonly ICommentService _commentService;
 		private readonly IMapper _mapper;
-		private readonly IFMPService _fmpService;
 
-
-		public CommentsController(ICommentRepository commentRepository, IFMPService fmpService, IMapper mapper, IStockRepository stockRepository)
+		public CommentsController(IMapper mapper, ICommentService commentService)
 		{
-			_commentRepository = commentRepository;
 			_mapper = mapper;
-			_stockRepository = stockRepository;
-			_fmpService = fmpService;
+			_commentService = commentService;
 		}
 
 		[HttpGet]
 		public async Task<IActionResult> GetAllAsync()
 		{
-			if (!ModelState.IsValid) return BadRequest(ModelState);
-			
-			var comments =  await _commentRepository.GetAllAsync();
-			var map = _mapper.Map<List<CommentDto>>(comments);
-			return Ok(map);	
+			var comments = await _commentService.GetAllAsync();
+			var commentDto = _mapper.Map<List<CommentDto>>(comments);
+			return Ok(CustomResponseDto<List<CommentDto>>.Success(200, commentDto));
+		}
+
+		[HttpGet("GetAllWithUserAsync")]
+		public async Task<IActionResult> GetAllWithUserAsync()
+		{
+			var comments = await _commentService.GetAllWithUserAsync();
+			var commentDto = _mapper.Map<List<CommentDto>>(comments.Data);
+			return Ok(CustomResponseDto<List<CommentDto>>.Success(200, commentDto));
 		}
 
 
@@ -44,61 +46,44 @@ namespace Finance.API.Controllers
 		{
 			if (!ModelState.IsValid) return BadRequest(ModelState);
 
-			var comment = await _commentRepository.GetByIdAsync(id);
-			var map = _mapper.Map<CommentDto>(comment);
-			if (map == null) return NotFound();
-			return Ok(map);
+			var comment = await _commentService.GetByIdAsync(id);
+			var commentDto = _mapper.Map<CommentDto>(comment);
+			if (commentDto == null) return NotFound();
+
+			return Ok(CustomResponseDto<CommentDto>.Success(200, commentDto));
 		}
 
 		[Authorize]
 		[HttpPost("{symbol:alpha}")]
 		public async Task<IActionResult> CreateComment([FromRoute] string symbol, CreateCommentRequestDto createCommentRequestDto)
 		{
-			if (!ModelState.IsValid) return BadRequest(ModelState);
-
-			symbol = symbol.ToLower();
-			var stock = await _stockRepository.GetBySymbolAsync(symbol);
-
-			if (stock == null)
-			{
-				stock = await _fmpService.FindStockBySymbolAsync(symbol);
-				if (stock == null)
-				{
-					return BadRequest("Stock does not exists");
-				}
-				else
-				{
-					await _stockRepository.CreateAsync(stock);
-				}
-			}
-
-
-			var commentModel = _mapper.Map<Comment>(createCommentRequestDto);
-			commentModel.StockId = stock.Id;
-			var createdComment =  await _commentRepository.CreateAsync(commentModel);
-			var commentDto = _mapper.Map<CommentDto>(createdComment); // Bu satırı ekleyin
-
-			return Ok(commentDto); // Bu satırı düzeltin
+			var comment = await _commentService.CreateAsync(symbol, createCommentRequestDto);
+			var commentDto = _mapper.Map<CommentDto>(comment.Data);
+			return Ok(CustomResponseDto<CommentDto>.Success(200, commentDto));
 		}
 		[HttpPut]
 		[Route("{id:int}")]
 		public async Task<IActionResult> Update([FromRoute] int id, [FromBody] UpdateCommentRequestDto updateDto)
 		{
-			if (!ModelState.IsValid)
-				return BadRequest(ModelState);
+			var comment = await _commentService.GetByIdAsync(id);
 
-			var commentModel = await _commentRepository.UpdateAsync(id, updateDto);
-			if (commentModel == null) return NotFound();
-			return Ok(updateDto);
+			if (comment == null)
+			{
+				return BadRequest("Girilen ID veritabanında bulunmuyor.");
+			}
+			await _commentService.UpdateAsync(_mapper.Map(updateDto, comment));
+
+			return Ok(CustomResponseDto<NoContentDto>.Success(200));
+
 		}
 
 		[HttpDelete]
-        [Route("{id:int}")]
+		[Route("{id:int}")]
 		public async Task<IActionResult> Delete([FromRoute] int id)
 		{
-			if (!ModelState.IsValid) return BadRequest(ModelState);
-			await _commentRepository.DeleteAsync(id);
-			return NoContent();
+			var comment = await _commentService.GetByIdAsync(id);
+			await _commentService.RemoveAsync(comment);
+			return Ok(CustomResponseDto<NoContentDto>.Success(200));
 		}
 	}
 }
