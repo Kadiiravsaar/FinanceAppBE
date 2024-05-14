@@ -1,11 +1,14 @@
-﻿using Finance.API.Migrations;
-using Finance.API.Models;
-using Microsoft.AspNetCore.Identity;
+﻿using Finance.Core.Models;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using System.Data;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
-namespace Finance.API.Data
+namespace Finance.Repository.Repositories
 {
 	public class AppDbContext : IdentityDbContext<AppUser>
 	{
@@ -21,7 +24,7 @@ namespace Finance.API.Data
 		{
 			base.OnModelCreating(builder);
 			builder.Entity<Portfolio>(x => x.HasKey(p => new { p.AppUserId, p.StockId }));
-			
+
 			builder.Entity<Portfolio>()
 				.HasOne(u => u.AppUser)
 				.WithMany(u => u.Portfolios)
