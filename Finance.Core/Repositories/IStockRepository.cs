@@ -12,7 +12,6 @@ namespace Finance.Core.Repositories
 	{
 		Task<List<Stock>> GetAllWithCommentsAsync();
 		Task<Stock?> GetBySymbolAsync(string symbol);
-		
 		Task<bool> StockExist(int id);
 
 

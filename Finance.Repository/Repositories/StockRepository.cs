@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Finance.Repository.Repositories
 {
-    public class StockRepository : GenericRepository<Stock>, IStockRepository
+	public class StockRepository : GenericRepository<Stock>, IStockRepository
 	{
 		public StockRepository(AppDbContext context) : base(context)
 		{
@@ -27,14 +27,9 @@ namespace Finance.Repository.Repositories
 			var hasStock = _context.Stocks.AnyAsync(x => x.Id == id);
 			return hasStock;
 		}
-
-		public Task<Stock?> update2(int id, UpdateStockRequestDto updateStockRequestDto)
-		{
-			throw new NotImplementedException();
-		}
 	}
 
 
-	
+
 
 }
