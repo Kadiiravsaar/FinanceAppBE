@@ -40,5 +40,10 @@ namespace Finance.Repository.Repositories
 			return await _context.Comments.Include(c => c.AppUser).ToListAsync();
 			
 		}
+
+		public async Task<Comment> GetByIdAsyncWithUser(int id)
+		{
+			return await _context.Comments.Include(c => c.AppUser).FirstOrDefaultAsync(c => c.Id == id);
+		}
 	}
 }
