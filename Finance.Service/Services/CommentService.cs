@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -64,6 +65,18 @@ namespace Finance.Service.Services
 
 
 		}
+
+		public async Task<CustomResponseDto<CommentDto>> GetByIdWithUser(int id)
+		{
+			var comment = await _commentRepository.GetByIdAsyncWithUser(id);
+			if (comment == null)
+			{
+				return CustomResponseDto<CommentDto>.Fail(404, "Girilen ID'ye sahip bir yorum yok");
+			}
+			var commentDto = _mapper.Map<CommentDto>(comment);
+			return CustomResponseDto<CommentDto>.Success(200, commentDto);
+		}
+
 		private async Task<AppUser> GetCurrentUserAsync()
 		{
 			var userId = _httpContextAccessor.HttpContext.User.GetUserId();
