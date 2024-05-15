@@ -10,11 +10,11 @@ namespace Finance.Core.Services
 		Task<CustomResponseDto<CommentDto>> CreateAsync(string symbol,CreateCommentRequestDto createCommentRequestDto);
 		Task<CustomResponseDto<List<CommentDto>>> GetAllWithUserAsync();
 
+		Task<CustomResponseDto<CommentDto>> GetByIdWithUser(int id);
 
-		//public async Task<List<Comment>> GetAllAsync()
-		//{
-		//	return await _context.Comments.Include(c => c.AppUser).ToListAsync();
-		//}
+
+
+	
 
 	}
 

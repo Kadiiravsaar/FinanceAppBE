@@ -10,5 +10,7 @@ namespace Finance.Core.Repositories
 
 		Task<List<Comment>> GetAllWithUserAsync();
 
+		Task<Comment> GetByIdAsyncWithUser(int id);
+
 	}
 }
