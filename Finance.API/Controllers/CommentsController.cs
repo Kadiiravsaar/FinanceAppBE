@@ -53,6 +53,19 @@ namespace Finance.API.Controllers
 			return Ok(CustomResponseDto<CommentDto>.Success(200, commentDto));
 		}
 
+		[HttpGet("GetByIdAsyncWithUser")]
+		public async Task<IActionResult> GetByIdAsyncWithUser(int id)
+		{
+			var comment = await _commentService.GetByIdWithUser(id);
+			if (comment.StatusCode == 404)
+			{
+				return NotFound(CustomResponseDto<CommentDto>.Fail(404, comment.Errors));
+			}
+			var commentDto = _mapper.Map<CommentDto>(comment.Data);
+			return Ok(CustomResponseDto<CommentDto>.Success(200, commentDto));
+		}
+
+
 		[Authorize]
 		[HttpPost("{symbol:alpha}")]
 		public async Task<IActionResult> CreateComment([FromRoute] string symbol, CreateCommentRequestDto createCommentRequestDto)
