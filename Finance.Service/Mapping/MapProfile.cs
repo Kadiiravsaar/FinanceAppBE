@@ -20,7 +20,9 @@ namespace Finance.Service.Mapping
             CreateMap<Stock, StockCommentDto>();
             CreateMap<FMPStock, Stock>();
 
-            CreateMap<Comment, StockCommentDto>();
+            CreateMap<Comment, StockCommentDto>()
+                .ForMember(dest=>dest.CreatedBy, opt => opt
+                .MapFrom(src=>src.AppUser.UserName));
             CreateMap<CreateStockRequestDto, Stock>().ReverseMap();
             CreateMap<UpdateStockRequestDto, Stock>().ReverseMap();
             CreateMap<CreateCommentRequestDto, CommentDto>();
