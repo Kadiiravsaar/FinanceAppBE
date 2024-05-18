@@ -22,28 +22,27 @@ namespace Finance.Service.Services
 {
 	public class CommentService : Service<Comment>, ICommentService
 	{
-		private readonly IStockRepository _stockRepository;
+		private readonly IStockService _stockService ;
 		private readonly ICommentRepository _commentRepository;
-		private readonly IFMPService _fmpService;
+
 		private readonly IMapper _mapper;
 		private readonly IHttpContextAccessor _httpContextAccessor;
 		private readonly UserManager<AppUser> _userManager;
-		public CommentService(IGenericRepository<Comment> repository, IUnitOfWork unitOfWork, IStockRepository stockRepository, IMapper mapper, IFMPService fmpService, ICommentRepository commentRepository, IHttpContextAccessor httpContextAccessor, UserManager<AppUser> userManager) : base(repository, unitOfWork)
+		public CommentService(IGenericRepository<Comment> repository, IUnitOfWork unitOfWork, IMapper mapper, ICommentRepository commentRepository, IHttpContextAccessor httpContextAccessor, UserManager<AppUser> userManager, IStockService stockService) : base(repository, unitOfWork)
 		{
-			_stockRepository = stockRepository;
 			_mapper = mapper;
-			_fmpService = fmpService;
 			_commentRepository = commentRepository;
 			_httpContextAccessor = httpContextAccessor;
 			_userManager = userManager;
+			_stockService = stockService;
 		}
 
 		public async Task<CustomResponseDto<CommentDto>> CreateAsync(string symbol, CreateCommentRequestDto createCommentRequestDto)
 		{
 			var appUser = await GetCurrentUserAsync();
-			var stock = await GetStockBySymbolAsync(symbol);
 
-			if (stock == null) throw new Exception("Stock does not exists");
+			var stock = await _stockService.GetOrAddStockAsync(symbol);
+			if (stock == null) throw new Exception("Stock does not exist");
 
 			var commentModel = _mapper.Map<Comment>(createCommentRequestDto);
 
@@ -83,19 +82,6 @@ namespace Finance.Service.Services
 			return await _userManager.FindByIdAsync(userId);
 		}
 
-		private async Task<StockCommentDto> GetStockBySymbolAsync(string symbol)
-		{
-			var stock = await _stockRepository.GetBySymbolAsync(symbol);
-			if (stock == null)
-			{
-				stock = await _fmpService.FindStockBySymbolAsync(symbol);
-				if (stock != null)
-				{
-					await _stockRepository.AddAsync(stock);
-				}
-			}
-			var map = _mapper.Map<StockCommentDto>(stock);
-			return map;
-		}
+		
 	}
 }
