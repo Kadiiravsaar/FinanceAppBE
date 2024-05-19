@@ -7,10 +7,10 @@ namespace Finance.Core.Services
 {
 	public interface ICommentService : IService<Comment>
 	{
-		Task<CustomResponseDto<CommentDto>> CreateAsync(string symbol,CreateCommentRequestDto createCommentRequestDto);
-		Task<CustomResponseDto<List<CommentDto>>> GetAllWithUserAsync();
+		Task<CustomResponseDto<CommentWithUserDto>> CreateAsync(string symbol,CreateCommentRequestDto createCommentRequestDto);
+		Task<CustomResponseDto<List<CommentWithUserDto>>> GetAllWithUserAsync();
 
-		Task<CustomResponseDto<CommentDto>> GetByIdWithUser(int id);
+		Task<CustomResponseDto<CommentWithUserDto>> GetByIdWithUser(int id);
 
 
 
