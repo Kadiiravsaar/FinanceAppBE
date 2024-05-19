@@ -36,8 +36,7 @@ namespace Finance.API.Controllers
 		public async Task<IActionResult> GetAllWithUserAsync()
 		{
 			var comments = await _commentService.GetAllWithUserAsync();
-			var commentDto = _mapper.Map<List<CommentDto>>(comments.Data);
-			return Ok(CustomResponseDto<List<CommentDto>>.Success(200, commentDto));
+			return Ok(CustomResponseDto<List<CommentWithUserDto>>.Success(200, comments.Data));
 		}
 
 
@@ -48,8 +47,6 @@ namespace Finance.API.Controllers
 
 			var comment = await _commentService.GetByIdAsync(id);
 			var commentDto = _mapper.Map<CommentDto>(comment);
-			if (commentDto == null) return NotFound();
-
 			return Ok(CustomResponseDto<CommentDto>.Success(200, commentDto));
 		}
 
@@ -71,21 +68,14 @@ namespace Finance.API.Controllers
 		public async Task<IActionResult> CreateComment([FromRoute] string symbol, CreateCommentRequestDto createCommentRequestDto)
 		{
 			var comment = await _commentService.CreateAsync(symbol, createCommentRequestDto);
-			var commentDto = _mapper.Map<CommentDto>(comment.Data);
-			return Ok(CustomResponseDto<CommentDto>.Success(200, commentDto));
+			return Ok(CustomResponseDto<CommentWithUserDto>.Success(200, comment.Data));
 		}
 		[HttpPut]
 		[Route("{id:int}")]
 		public async Task<IActionResult> Update([FromRoute] int id, [FromBody] UpdateCommentRequestDto updateDto)
 		{
 			var comment = await _commentService.GetByIdAsync(id);
-
-			if (comment == null)
-			{
-				return BadRequest("Girilen ID veritabanında bulunmuyor.");
-			}
 			await _commentService.UpdateAsync(_mapper.Map(updateDto, comment));
-
 			return Ok(CustomResponseDto<NoContentDto>.Success(200));
 
 		}
