@@ -1,25 +1,41 @@
-using Finance.API.Data;
-using Finance.API.Helpers;
-using Finance.API.Interfaces;
-using Finance.API.Mappers;
-using Finance.API.Models;
-using Finance.API.Repositories;
+using Autofac.Extensions.DependencyInjection;
+using Autofac;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Text;
+using System.Reflection;
+using Finance.Core.Services;
+using Finance.Service.Services;
+using Finance.Core.Models;
+using Finance.Service.Mapping;
+using FluentValidation.AspNetCore;
+using Finance.Service.Validations;
+using Finance.API.Filters;
+using Microsoft.AspNetCore.Mvc;
+using Finance.API.Middlewares;
+using Finance.API.Modules;
+using Finance.Repository.Repositories;
+using Finance.Core.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddAutoMapper(typeof(MapProfile));
 
-builder.Services.AddControllers().AddNewtonsoftJson(options =>
+builder.Services.AddControllers(options => options.Filters.Add(new ValidateFilterAttribute()))
+	.AddFluentValidation(x => x.RegisterValidatorsFromAssemblyContaining<DtoValidator>())
+	.AddNewtonsoftJson(options =>{options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;});
+
+
+builder.Services.Configure<ApiBehaviorOptions>(options =>
 {
-	options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
+	options.SuppressModelStateInvalidFilter = true;
+
 });
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(option =>
@@ -51,10 +67,16 @@ builder.Services.AddSwaggerGen(option =>
 });
 
 
-builder.Services.AddDbContext<AppDbContext>(opt =>
+builder.Services.AddDbContext<AppDbContext>(x =>
 {
-	opt.UseSqlServer(builder.Configuration.GetConnectionString("SqlCon"));
+	x.UseSqlServer(builder.Configuration.GetConnectionString("SqlCon"), option =>
+	{
+		option.MigrationsAssembly(Assembly.GetAssembly(typeof(AppDbContext)).GetName().Name);
+	});
 });
+
+builder.Host.UseServiceProviderFactory(new AutofacServiceProviderFactory());
+
 
 builder.Services.AddIdentity<AppUser, IdentityRole>(opt =>
 {
@@ -63,7 +85,8 @@ builder.Services.AddIdentity<AppUser, IdentityRole>(opt =>
 	opt.Password.RequireUppercase = true;
 	opt.Password.RequireNonAlphanumeric = true;
 	opt.Password.RequiredLength = 6;
-}).AddEntityFrameworkStores<AppDbContext>();
+})
+.AddEntityFrameworkStores<AppDbContext>();
 
 builder.Services.AddAuthentication(opt =>
 {
@@ -90,13 +113,10 @@ builder.Services.AddAuthentication(opt =>
 });
 
 builder.Services.AddHttpContextAccessor();
-builder.Services.AddScoped<IStockRepository, StockRepository>();
-builder.Services.AddScoped<ICommentRepository, CommentRepository>();
-builder.Services.AddScoped<IUserRepository, UserRepository>();
-builder.Services.AddScoped<ITokenService, TokenService>();
-builder.Services.AddScoped<IPortfolioRepository, PortfolioRepository>();
 builder.Services.AddScoped<IFMPService, FMPService>();
 builder.Services.AddHttpClient<IFMPService, FMPService>();
+
+builder.Host.ConfigureContainer<ContainerBuilder>(containerBuilder => containerBuilder.RegisterModule(new RepoServiceModule()));
 
 var app = builder.Build();
 
@@ -116,7 +136,11 @@ app.UseCors(x => x
 );
 
 app.UseHttpsRedirection();
+
+app.UserCustomException();
+
 app.UseAuthentication();
+
 app.UseAuthorization();
 
 app.MapControllers();
