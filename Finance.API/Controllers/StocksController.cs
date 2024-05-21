@@ -35,8 +35,7 @@ namespace Finance.API.Controllers
 		public async Task<IActionResult> GetAllWithComments()
 		{
 			var stocks = await _service.GetAllWithCommentsAsync();
-			var stockDtos = _mapper.Map<List<StockDto>>(stocks.Data);
-			return Ok(CustomResponseDto<List<StockDto>>.Success(200, stockDtos));
+			return Ok(CustomResponseDto<List<StockDto>>.Success(200, stocks.Data));
 		}
 
 
@@ -75,5 +74,14 @@ namespace Finance.API.Controllers
 			var stockDto = _mapper.Map<StockDto>(stock);
 			return Ok(CustomResponseDto<StockDto>.Success(201, stockDto));
 		}
+
+		[HttpGet("getallfiltering")]
+		public async Task<IActionResult> GetStocksAsync([FromQuery]QueryObject queryObject)
+		{
+			var stocks = await _service.GetStocksAsync(queryObject);
+			return Ok(CustomResponseDto<List<StockDto>>.Success(200, stocks.Data));
+		}
+
+
 	}
 }
