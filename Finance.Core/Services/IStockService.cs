@@ -9,9 +9,10 @@ namespace Finance.Core.Services
 		public Task<CustomResponseDto<List<StockDto>>> GetAllWithCommentsAsync();
 
 		Task<CustomResponseDto<StockDto?>> GetBySymbolAsync(string symbol);
-		Task<bool> StockExist(int id);
+		Task<CustomResponseDto<StockDto>> GetOrAddStockAsync(string symbol);
 
-		
+		Task<CustomResponseDto<List<StockDto>>> GetStocksAsync(QueryObject queryObject);
 	}
-
 }
+
+
