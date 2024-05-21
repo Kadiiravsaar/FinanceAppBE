@@ -7,6 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Autofac.Extensions.DependencyInjection" Version="9.0.0" />
     <PackageReference Include="AutoMapper" Version="13.0.1" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="7.0.18" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="7.0.18" />
@@ -28,7 +29,15 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Utilities\" />
+    <ProjectReference Include="..\Finance.Core\Finance.Core.csproj" />
+    <ProjectReference Include="..\Finance.Repository\Finance.Repository.csproj" />
+    <ProjectReference Include="..\Finance.Service\Finance.Service.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="TextTemplate.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+    </None>
   </ItemGroup>
 
 </Project>
