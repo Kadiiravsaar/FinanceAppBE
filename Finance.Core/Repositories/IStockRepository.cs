@@ -14,6 +14,8 @@ namespace Finance.Core.Repositories
 		Task<Stock?> GetBySymbolAsync(string symbol);
 		Task<bool> StockExist(int id);
 
+		Task AddStock(Stock stock);
+
 
 	}
 
