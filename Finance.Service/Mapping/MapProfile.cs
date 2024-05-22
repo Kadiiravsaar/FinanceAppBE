@@ -16,29 +16,32 @@ namespace Finance.Service.Mapping
     {
         public MapProfile()
         {
-            CreateMap<Stock, StockDto>();
+			// Stock Mapping
+
+			CreateMap<Stock, StockDto>();
             CreateMap<Stock, StockCommentDto>();
             CreateMap<FMPStock, Stock>();
-
-            CreateMap<Comment, StockCommentDto>()
-                .ForMember(dest=>dest.CreatedBy, opt => opt
-                .MapFrom(src=>src.AppUser.UserName));
             CreateMap<CreateStockRequestDto, Stock>().ReverseMap();
             CreateMap<UpdateStockRequestDto, Stock>().ReverseMap();
-            CreateMap<CreateCommentRequestDto, CommentDto>();
-            CreateMap<UpdateCommentRequestDto, Comment>();
-
-			
 
 
-
+            // AppUser mappinh
 			CreateMap<AppUser, UserDto>();
 
-            CreateMap<CreateCommentRequestDto, Comment>();
-            CreateMap<Comment, CommentDto>()
-            	.ForMember(dest => dest.CreatedBy, opt => opt.MapFrom(src => src.AppUser.UserName)); // Yeni alanın eşlenmesi
 
 
-        }
+			// Comment Mapping
+			CreateMap<CreateCommentRequestDto, CommentWithUserDto>();
+            CreateMap<UpdateCommentRequestDto, Comment>();
+			CreateMap<CreateCommentRequestDto, Comment>();
+            CreateMap<Comment, CommentDto>();
+
+            CreateMap<Comment, CommentWithUserDto>()
+                .ForMember(dest => dest.CreatedBy, opt => opt.MapFrom(src => src.AppUser.UserName))// Yeni alanın eşlenmesi
+                .ForMember(dest => dest.Symbol, opt => opt.MapFrom(src => src.Stock.Symbol));
+
+			CreateMap<Comment, StockCommentDto>()
+			   .ForMember(dest => dest.CreatedBy, opt => opt.MapFrom(src => src.AppUser.UserName));
+		}
     }
 }
