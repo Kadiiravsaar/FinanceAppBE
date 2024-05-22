@@ -1,6 +1,7 @@
 ﻿using Finance.Core.Repositories;
 using Finance.Core.Services;
 using Finance.Core.UnitOfWorks;
+using Finance.Service.Exceptions;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -52,8 +53,8 @@ namespace Finance.Service.Services
 
 			if (hasProduct == null)
 			{
-				//throw new NotFoundExcepiton($"{typeof(T).Name}({id}) not found");
-				return null;
+				throw new NotFoundException($"{typeof(T).Name}({id}) not found");
+				
 			}
 			return hasProduct;
 		}
