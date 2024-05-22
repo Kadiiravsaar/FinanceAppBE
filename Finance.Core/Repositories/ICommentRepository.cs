@@ -6,7 +6,7 @@ namespace Finance.Core.Repositories
 {
 	public interface ICommentRepository : IGenericRepository<Comment>
 	{
-		Task<Comment> CreateAsync(string symbol, Comment comment);
+		Task<Comment> CreateAsync(Comment comment);
 
 		Task<List<Comment>> GetAllWithUserAsync();
 

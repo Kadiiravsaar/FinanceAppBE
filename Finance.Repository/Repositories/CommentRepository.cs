@@ -25,10 +25,8 @@ namespace Finance.Repository.Repositories
 	
 		}
 
-		public async Task<Comment> CreateAsync(string symbol, Comment comment)
+		public async Task<Comment> CreateAsync(Comment comment)
 		{
-			var stock = await _stockRepository.GetBySymbolAsync(symbol);
-			comment.StockId = stock.Id;
 			await _context.AddAsync(comment);
 			await _context.SaveChangesAsync();
 			return comment;
@@ -37,7 +35,7 @@ namespace Finance.Repository.Repositories
 		public async Task<List<Comment>> GetAllWithUserAsync()
 		{
 
-			return await _context.Comments.Include(c => c.AppUser).ToListAsync();
+			return await _context.Comments.Include(c => c.AppUser).Include(c=>c.Stock).ToListAsync();
 			
 		}
 
