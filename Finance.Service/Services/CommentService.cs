@@ -24,7 +24,6 @@ namespace Finance.Service.Services
 	{
 		private readonly IStockService _stockService ;
 		private readonly ICommentRepository _commentRepository;
-
 		private readonly IMapper _mapper;
 		private readonly IHttpContextAccessor _httpContextAccessor;
 		private readonly UserManager<AppUser> _userManager;
@@ -37,7 +36,7 @@ namespace Finance.Service.Services
 			_stockService = stockService;
 		}
 
-		public async Task<CustomResponseDto<CommentDto>> CreateAsync(string symbol, CreateCommentRequestDto createCommentRequestDto)
+		public async Task<CustomResponseDto<CommentWithUserDto>> CreateAsync(string symbol, CreateCommentRequestDto createCommentRequestDto)
 		{
 			var appUser = await GetCurrentUserAsync();
 
@@ -46,34 +45,34 @@ namespace Finance.Service.Services
 
 			var commentModel = _mapper.Map<Comment>(createCommentRequestDto);
 
-			commentModel.StockId = stock.Id;
+			commentModel.StockId = stock.Data.Id;
 			commentModel.AppUserId = appUser.Id;
 
-			await _commentRepository.CreateAsync(symbol,commentModel);
-			var commentDto = _mapper.Map<CommentDto>(commentModel);
+			await _commentRepository.CreateAsync(commentModel);
+			var commentDto = _mapper.Map<CommentWithUserDto>(commentModel);
 
-			return CustomResponseDto<CommentDto>.Success(200,commentDto);
+			return CustomResponseDto<CommentWithUserDto>.Success(200,commentDto);
 		}
 
-		public async Task<CustomResponseDto<List<CommentDto>>> GetAllWithUserAsync()
+		public async Task<CustomResponseDto<List<CommentWithUserDto>>> GetAllWithUserAsync()
 		{
 
 			var commentWithUser = await _commentRepository.GetAllWithUserAsync();
-			var commentWithUserDto = _mapper.Map<List<CommentDto>>(commentWithUser);
-			return CustomResponseDto<List<CommentDto>>.Success(200, commentWithUserDto);
+			var commentWithUserDto = _mapper.Map<List<CommentWithUserDto>>(commentWithUser);
+			return CustomResponseDto<List<CommentWithUserDto>>.Success(200, commentWithUserDto);
 
 
 		}
 
-		public async Task<CustomResponseDto<CommentDto>> GetByIdWithUser(int id)
+		public async Task<CustomResponseDto<CommentWithUserDto>> GetByIdWithUser(int id)
 		{
 			var comment = await _commentRepository.GetByIdAsyncWithUser(id);
 			if (comment == null)
 			{
-				return CustomResponseDto<CommentDto>.Fail(404, "Girilen ID'ye sahip bir yorum yok");
+				return CustomResponseDto<CommentWithUserDto>.Fail(404, "Girilen ID'ye sahip bir yorum yok");
 			}
-			var commentDto = _mapper.Map<CommentDto>(comment);
-			return CustomResponseDto<CommentDto>.Success(200, commentDto);
+			var commentDto = _mapper.Map<CommentWithUserDto>(comment);
+			return CustomResponseDto<CommentWithUserDto>.Success(200, commentDto);
 		}
 
 		private async Task<AppUser> GetCurrentUserAsync()
