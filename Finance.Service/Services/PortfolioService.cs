@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Finance.Core.DTOs.Portfolio;
 using Finance.Core.DTOs.Result;
 using Finance.Core.DTOs.Stock;
 using Finance.Core.Models;
@@ -19,10 +20,12 @@ namespace Finance.Service.Services
 			_mapper = mapper;
 		}
 
-		public async Task<CustomResponseDto<Portfolio>> CreateAsync(string symbol)
+		public async Task<CustomResponseDto<PortfolioDto>> CreateAsync(string symbol)
 		{
+			
 			var portfolio = await _repo.CreateAsync(symbol);
-			return CustomResponseDto<Portfolio>.Success(200, portfolio);
+			var portfolioDto = _mapper.Map<PortfolioDto>(portfolio);
+			return CustomResponseDto<PortfolioDto>.Success(200, portfolioDto);
 		}
 
 		public async Task<CustomResponseDto<Portfolio>> DeleteAsync(string symbol)
@@ -31,11 +34,11 @@ namespace Finance.Service.Services
 			return CustomResponseDto<Portfolio>.Success(200, portfolio);
 		}
 
-		public async Task<CustomResponseDto<List<StockDto>>> GetUserPortfolio()
+		public async Task<CustomResponseDto<List<StockWithCommentDto>>> GetUserPortfolio()
 		{
 			var stocks = await _repo.GetUserPortfolio();
-			var stockDto = _mapper.Map<List<StockDto>>(stocks);
-			return CustomResponseDto<List<StockDto>>.Success(200, stockDto);
+			var stockDto = _mapper.Map<List<StockWithCommentDto>>(stocks);
+			return CustomResponseDto<List<StockWithCommentDto>>.Success(200, stockDto);
 		}
 	}
 }

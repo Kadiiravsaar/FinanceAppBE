@@ -31,8 +31,8 @@ namespace Finance.API.Controllers
 		public async Task<ActionResult> GetUserPortfolio()
 		{
 			var userPortfolio = await _portfolioService.GetUserPortfolio();
-			var userPortfolioDtos = _mapper.Map<List<StockDto>>(userPortfolio.Data);
-			return Ok(CustomResponseDto<List<StockDto>>.Success(200, userPortfolioDtos));
+			var userPortfolioDtos = _mapper.Map<List<StockWithCommentDto>>(userPortfolio.Data);
+			return Ok(CustomResponseDto<List<StockWithCommentDto>>.Success(200, userPortfolioDtos));
 		}
 
 

@@ -1,4 +1,6 @@
-﻿namespace Finance.Core.DTOs.User
+﻿using Finance.Core.DTOs.Stock;
+
+namespace Finance.Core.DTOs.User
 {
     public class UserDto
     {
@@ -6,4 +8,5 @@
         public string Email { get; set; }
         public string UserName { get; set; }
     }
+	
 }

@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Finance.Core.DTOs.Comment;
+using Finance.Core.DTOs.Portfolio;
 using Finance.Core.DTOs.Result;
 using Finance.Core.DTOs.Stock;
 using Finance.Core.DTOs.User;
@@ -18,16 +19,25 @@ namespace Finance.Service.Mapping
         {
 			// Stock Mapping
 
-			CreateMap<Stock, StockDto>();
+			CreateMap<Stock, StockWithCommentDto>();
             CreateMap<Stock, StockCommentDto>();
             CreateMap<FMPStock, Stock>();
-            CreateMap<CreateStockRequestDto, Stock>().ReverseMap();
+			CreateMap<Stock, StockDto>();
+
+			CreateMap<CreateStockRequestDto, Stock>().ReverseMap();
             CreateMap<UpdateStockRequestDto, Stock>().ReverseMap();
 
 
             // AppUser mappinh
 			CreateMap<AppUser, UserDto>();
 
+
+			// Portfolio mapping
+			CreateMap<Portfolio, PortfolioDto>()
+				.ForMember(dest => dest.AppUser, opt => opt.MapFrom(src => src.AppUser))
+				.ForMember(dest => dest.Stock, opt => opt.MapFrom(src => src.Stock));
+
+		
 
 
 			// Comment Mapping
