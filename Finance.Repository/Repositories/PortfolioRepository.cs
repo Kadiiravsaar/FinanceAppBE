@@ -44,7 +44,7 @@ namespace Finance.Repository.Repositories
 				}
 				else
 				{
-					await _stockRepository.AddAsync(hasStock);
+					await _stockRepository.AddStock(hasStock);
 				}
 			}
 
