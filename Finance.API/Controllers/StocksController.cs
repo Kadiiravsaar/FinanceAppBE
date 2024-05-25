@@ -26,8 +26,8 @@ namespace Finance.API.Controllers
 		public async Task<IActionResult> All()
 		{
 			var stocks = await _service.GetAllAsync();
-			var stocksDtos = _mapper.Map<List<StockDto>>(stocks.ToList());
-			return Ok(CustomResponseDto<List<StockDto>>.Success(200, stocksDtos));
+			var stocksDtos = _mapper.Map<List<StockWithCommentDto>>(stocks.ToList());
+			return Ok(CustomResponseDto<List<StockWithCommentDto>>.Success(200, stocksDtos));
 		}
 
 
@@ -35,7 +35,7 @@ namespace Finance.API.Controllers
 		public async Task<IActionResult> GetAllWithComments()
 		{
 			var stocks = await _service.GetAllWithCommentsAsync();
-			return Ok(CustomResponseDto<List<StockDto>>.Success(200, stocks.Data));
+			return Ok(CustomResponseDto<List<StockWithCommentDto>>.Success(200, stocks.Data));
 		}
 
 
@@ -71,15 +71,15 @@ namespace Finance.API.Controllers
 		public async Task<IActionResult> GetById([FromRoute] int id)
 		{
 			var stock = await _service.GetByIdAsync(id);
-			var stockDto = _mapper.Map<StockDto>(stock);
-			return Ok(CustomResponseDto<StockDto>.Success(201, stockDto));
+			var stockDto = _mapper.Map<StockWithCommentDto>(stock);
+			return Ok(CustomResponseDto<StockWithCommentDto>.Success(201, stockDto));
 		}
 
 		[HttpGet("getallfiltering")]
 		public async Task<IActionResult> GetStocksAsync([FromQuery]QueryObject queryObject)
 		{
 			var stocks = await _service.GetStocksAsync(queryObject);
-			return Ok(CustomResponseDto<List<StockDto>>.Success(200, stocks.Data));
+			return Ok(CustomResponseDto<List<StockWithCommentDto>>.Success(200, stocks.Data));
 		}
 
 

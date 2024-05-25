@@ -24,13 +24,13 @@ namespace Finance.Service.Services
 			_fmpService = fmpService;
 		}
 
-		public async Task<CustomResponseDto<List<StockDto>>> GetAllWithCommentsAsync()
+		public async Task<CustomResponseDto<List<StockWithCommentDto>>> GetAllWithCommentsAsync()
 		{
 			var stoks = await _stockRepository.GetAllWithCommentsAsync();
-			var stoksDto = _mapper.Map<List<StockDto>>(stoks);
-			return CustomResponseDto<List<StockDto>>.Success(200, stoksDto);
+			var stoksDto = _mapper.Map<List<StockWithCommentDto>>(stoks);
+			return CustomResponseDto<List<StockWithCommentDto>>.Success(200, stoksDto);
 		}
-		public async Task<CustomResponseDto<List<StockDto>>> GetStocksAsync(QueryObject queryObject)
+		public async Task<CustomResponseDto<List<StockWithCommentDto>>> GetStocksAsync(QueryObject queryObject)
 		{
 			var query = _stockRepository.GetAll();
 
@@ -57,18 +57,18 @@ namespace Finance.Service.Services
 			query = query.Skip(skipNumber).Take(queryObject.PageSize);
 
 			var stocks = await query.ToListAsync();
-			var stocksDto = _mapper.Map<List<StockDto>>(stocks);
-			return CustomResponseDto<List<StockDto>>.Success(200, stocksDto);
+			var stocksDto = _mapper.Map<List<StockWithCommentDto>>(stocks);
+			return CustomResponseDto<List<StockWithCommentDto>>.Success(200, stocksDto);
 		}
 
-		public async Task<CustomResponseDto<StockDto?>> GetBySymbolAsync(string symbol)
+		public async Task<CustomResponseDto<StockWithCommentDto?>> GetBySymbolAsync(string symbol)
 		{
 			var stoks = await _stockRepository.GetBySymbolAsync(symbol);
-			var stoksDto = _mapper.Map<StockDto>(stoks);
-			return CustomResponseDto<StockDto>.Success(200, stoksDto);
+			var stoksDto = _mapper.Map<StockWithCommentDto>(stoks);
+			return CustomResponseDto<StockWithCommentDto>.Success(200, stoksDto);
 		}
 
-		public async Task<CustomResponseDto<StockDto>> GetOrAddStockAsync(string symbol)
+		public async Task<CustomResponseDto<StockWithCommentDto>> GetOrAddStockAsync(string symbol)
 		{
 			var stock = await _stockRepository.GetBySymbolAsync(symbol);
 			if (stock == null)
@@ -79,8 +79,8 @@ namespace Finance.Service.Services
 					await _stockRepository.AddStock(stock);
 				}
 			}
-			var stoksDto = _mapper.Map<StockDto>(stock);
-			return CustomResponseDto<StockDto>.Success(200, stoksDto);
+			var stoksDto = _mapper.Map<StockWithCommentDto>(stock);
+			return CustomResponseDto<StockWithCommentDto>.Success(200, stoksDto);
 		}
 
 	}
