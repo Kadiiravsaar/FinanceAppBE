@@ -56,16 +56,16 @@ namespace Finance.Repository.Repositories
 			if (getUser.Any(s => s.Symbol.ToLower() == symbol.ToLower())) return null; // sembolü var mı kontrol eder ve varsa küçük harfe çevirir
 
 			// Yeni portföy modelini oluştur
-			var newPortföy = new Portfolio
+			var newPortfolio = new Portfolio
 			{
 
 				AppUserId = userId.Id,
 				StockId = hasStock.Id
 			};
 
-			await _context.AddAsync(newPortföy);
+			await _context.AddAsync(newPortfolio);
 			await _context.SaveChangesAsync();
-			return newPortföy;
+			return newPortfolio;
 
 		}
 
