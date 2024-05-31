@@ -10,6 +10,7 @@ namespace Finance.Core.Models
 	{
 		public int Id { get; set; }
 		public DateTime CreatedOn { get; set; } = DateTime.UtcNow;
+		public bool IsDeleted { get; set; } = false;
 		public DateTime? UpdatedDate { get; set; }
 	}
 }
