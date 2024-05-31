@@ -1,4 +1,5 @@
-﻿using Finance.Core.Repositories;
+﻿using Finance.Core.Models;
+using Finance.Core.Repositories;
 using Finance.Core.Services;
 using Finance.Core.UnitOfWorks;
 using Finance.Service.Exceptions;
@@ -61,7 +62,16 @@ namespace Finance.Service.Services
 
 		public async Task RemoveAsync(T entity)
 		{
-			_repository.Remove(entity);
+			if (entity is BaseEntity baseEntity) // gelen entity eğer BaseEntity nesnesini miras alıyorsa if bloğuna girecektir.
+			{
+				baseEntity.IsDeleted = true;
+				_repository.Update(entity);
+			}
+			else
+			{
+				_repository.Remove(entity);
+			}
+			
 			await _unitOfWork.CommitAsync();
 		}
 
