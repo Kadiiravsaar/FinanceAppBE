@@ -23,6 +23,10 @@ namespace Finance.Repository.Repositories
 		protected override void OnModelCreating(ModelBuilder builder)
 		{
 			base.OnModelCreating(builder);
+
+			builder.Entity<Stock>().HasQueryFilter(s => !s.IsDeleted);
+			builder.Entity<Comment>().HasQueryFilter(c=> !c.IsDeleted);
+
 			builder.Entity<Portfolio>(x => x.HasKey(p => new { p.AppUserId, p.StockId }));
 
 			builder.Entity<Portfolio>()
